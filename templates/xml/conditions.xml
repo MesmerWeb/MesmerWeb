@@ -8,6 +8,6 @@
     {% if conditions.initialPopulationRef and conditions.initialPopulation %}
     <me:InitialPopulation>
         <molecule ref="{{ conditions.initialPopulationRef }}" me:population="{{ conditions.initialPopulation }}" />
-    {% endif %}
     </me:InitialPopulation>
+    {% endif %}
 </me:conditions>
