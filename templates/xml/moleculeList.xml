@@ -1,0 +1,76 @@
+<moleculeList>
+    {% for molecule in moleculeList %}
+    <molecule id="{{ molecule.id }}">
+        <propertyList>
+            {% if molecule.ZPE %}
+            <property dictRef="me:ZPE">
+                <scalar units="cm-1">{{ molecule.ZPE }}</scalar>
+            </property>
+            {% endif %}
+
+            {% if molecule.rotConsts %}
+            <property dictRef="me:rotConsts">
+                <array units="cm-1">{{ molecule.rotConsts }}</array>
+            </property>
+            {% endif %}
+
+            {% if molecule.vibFreqs %}
+            <property dictRef="me:vibFreqs">
+                <array units="cm-1">{{ molecule.vibFreqs }}</array>
+            </property>
+            {% endif %}
+
+            {% if molecule.frequenciesScaleFactor %}
+            <property dictRef="me:frequenciesScaleFactor">
+               <scalar>{{ molecule.frequenciesScaleFactor }}</scalar>
+            </property>
+            {% endif %}
+
+            {% if molecule.symmetryNumber %}
+            <property dictRef="me:symmetryNumber">
+                <scalar>{{ molecule.symmetryNumber }}</scalar>
+            </property>
+            {% endif %}
+
+            {% if molecule.MW %}
+            <property dictRef="me:MW">
+                <scalar units="amu">{{ molecule.MW }}</scalar>
+            </property>
+            {% endif %}
+
+            {% if molecule.spinMultiplicity %}
+            <property dictRef="me:spinMultiplicity">
+                <scalar>{{ molecule.spinMultiplicity }}</scalar>
+            </property>
+            {% endif %}
+
+            {% if molecule.epsilon %}
+            <property dictRef="me:epsilon">
+                <scalar>{{ molecule.epsilon }}</scalar>
+            </property>
+            {% endif %}
+
+            {% if molecule.sigma %}
+            <property dictRef="me:sigma">
+                <scalar>{{ molecule.sigma }}</scalar>
+            </property>
+            {% endif %}
+
+            {% if molecule.deltaEDown %}
+            <property dictRef="me:deltaEDown">
+                <scalar units="cm-1">{{ molecule.deltaEDown }}</scalar>
+            </property>
+            {% endif %}
+
+            {% if molecule.deltaEDownTExponent %}
+            <property dictRef="me:deltaEDownTExponent" default="true">
+                <scalar referenceTemperature="{{ molecule.referenceTemperature }}">{{ molecule.deltaEDownTExponent }}</scalar>
+            </property>
+            {% endif %}
+        </propertyList>
+        {% if molecule.DOSCMethod %}
+        <me:DOSCMethod name="{{ molecule.DOSCMethod }}"/>
+        {% endif %}
+    </molecule>
+    {% endfor %}
+</moleculeList>

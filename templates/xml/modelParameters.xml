@@ -1,0 +1,5 @@
+<me:modelParameters>
+    <me:grainSize units="cm-1">{{ modelParameters.grainSize }}</me:grainSize>
+    <me:maxTemperature>{{ modelParameters.maxTemperature }}</me:maxTemperature>
+    <me:energyAboveTheTopHill>{{ modelParameters.energyAboveTheTopHill }}</me:energyAboveTheTopHill>
+</me:modelParameters>

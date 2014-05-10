@@ -1,0 +1,11 @@
+<me:conditions>
+    <me:bathGas>{{ conditions.bathGas }}</me:bathGas>
+    <me:PTs>
+    {% for pt in conditions.PTs %}
+        <me:PTpair me:units="{{ conditions.units }}" me:P="{{ pt.P }}" me:T="{{ pt.T }}" />
+    {% endfor %}
+    </me:PTs>
+    <me:InitialPopulation>
+        <molecule ref="{{ conditions.initialPopulationRef }}" me:population="{{ conditions.initialPopulation }}" />
+    </me:InitialPopulation>
+</me:conditions>
