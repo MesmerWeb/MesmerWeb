@@ -5,7 +5,9 @@
         <me:PTpair me:units="{{ conditions.units }}" me:P="{{ pt.P }}" me:T="{{ pt.T }}" />
     {% endfor %}
     </me:PTs>
+    {% if conditions.initialPopulationRef and conditions.initialPopulation %}
     <me:InitialPopulation>
         <molecule ref="{{ conditions.initialPopulationRef }}" me:population="{{ conditions.initialPopulation }}" />
+    {% endif %}
     </me:InitialPopulation>
 </me:conditions>
