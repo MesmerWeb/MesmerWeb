@@ -63,8 +63,8 @@
             {% endif %}
 
             {% if molecule.deltaEDownTExponent %}
-            <property dictRef="me:deltaEDownTExponent" default="true">
-                <scalar referenceTemperature="{{ molecule.referenceTemperature }}">{{ molecule.deltaEDownTExponent }}</scalar>
+            <property dictRef="me:deltaEDown" >
+                <scalar units="cm-1">{{ molecule.deltaEDownTExponent }}</scalar>
             </property>
             {% endif %}
         </propertyList>
