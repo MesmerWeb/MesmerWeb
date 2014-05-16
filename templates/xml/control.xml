@@ -1,5 +1,7 @@
 <me:control>
+    {%  if control.eigenvalues %}
     <me:eigenvalues>{{ control.eigenvalues }}</me:eigenvalues>
+    {%  endif %}
     <me:calcMethod>{{ control.calcMethod }}</me:calcMethod>
     {% for key, value in control.options.items %}
         {% if value %}
