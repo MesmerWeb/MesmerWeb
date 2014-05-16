@@ -1,15 +1,8 @@
+# -*- coding: utf-8 -*-
 __author__ = 'ciaosu'
 
 from lxml import etree
-
-def separate(str, ch):
-    re = ''
-    lines = str.splitlines()
-    for line in lines:
-        line = line.strip()
-        if line:
-            re = re + line + ch
-    return re.rstrip()
+from shortcut import *
 
 class MesmerXML:
     control_options = [
@@ -51,145 +44,154 @@ class MesmerXML:
         self.molecules = {}
 
     # read condition from xml to json data
-    def read_condition(self, el):
+    def read_condition(self, condition_node):
         conditions = {}
-        PTs = []
 
+        # read bathGas
         try:
-            # read bathGas
-            bath_gas_node = el.xpath('.//me:bathGas', namespaces={'me': self.me_ns})[0]
+            bath_gas_node = getNode(condition_node, 'bathGas')
             conditions['bathGas'] = bath_gas_node.text
             self.molecules[conditions['bathGas']]['type'] = 'bathGas'
+        except:
+            pass
 
-            # read InitialPopulation
-            init_population_node = el.xpath('.//me:InitialPopulation', namespaces={'me': self.me_ns})[0]
-            conditions['initialPopulation'] = init_population_node[0].get('{%s}population' % self.me_ns)
-            conditions['initialPopulationRef'] = init_population_node[0].get('ref')
 
-            # read PTs
-            pts_node = el.xpath('.//me:PTs', namespaces={'me': self.me_ns})[0]
+        # read InitialPopulation
+        try:
+            init_population_node = getNode(condition_node, 'InitialPopulation')
+            conditions['initialPopulation'] = getAttr(init_population_node[0], 'population')
+            conditions['initialPopulationRef'] = getAttr(init_population_node[0], 'ref')
+        except:
+            pass
+
+        # read PTs
+        try:
+            conditions['PTs'] = []
+            pts_node = getNode(condition_node, 'PTs')
             for pt in pts_node:
                 if isinstance(pt, etree._Comment):
                     continue
-                PTs.append({
-                    'P': pt.get('{%s}P' % self.me_ns),
-                    'T': pt.get('{%s}T' % self.me_ns)
+                conditions['PTs'].append({
+                    'P': getAttr(pt, 'P'),
+                    'T': getAttr(pt, 'T')
                 })
-                conditions['units'] = pt.get('{%s}units' % self.me_ns)
+                conditions['units'] = getAttr(pt, 'units')
         except:
             pass
-        conditions['PTs'] = PTs
+
         return conditions
 
-
     # read control from xml to json data
-    def read_control(self, el):
-        control = {}
-        options = {}
-        for control_el in el:
-            if isinstance(control_el, etree._Comment):
+    def read_control(self, control_node):
+        control = {
+            'options': {}
+        }
+        for node in control_node:
+            if isinstance(node, etree._Comment):
                 continue
-            control_el_tag = etree.QName(control_el).localname
-            if control_el_tag == 'eigenvalues':
-                control['eigenvalues'] = control_el.text
-            elif control_el_tag == 'calcMethod':
-                control['calcMethod'] = control_el.text
             else:
-                try:
-                    i = self.control_options.index(control_el_tag)
-                    options[control_el_tag] = True
-                except:
-                    pass
-
-        control['options'] = options
+                tag = etree.QName(node).localname
+                if tag == 'eigenvalues':
+                    control['eigenvalues'] = node.text
+                elif tag == 'calcMethod':
+                    control['calcMethod'] = node.text
+                else:
+                    try:
+                        self.control_options.index(tag)
+                        control['options'][tag] = True
+                    except:
+                        pass
         return control
 
-
     # read modelParameters from xml to json data
-    def read_model_parameters(self, el):
+    def read_model_parameters(self, parameter_node):
         model_parameters = {}
-        for parameter_el in el:
-            if isinstance(parameter_el, etree._Comment):
+        for node in parameter_node:
+            if isinstance(node, etree._Comment):
                 continue
-            parameter_el_tag = etree.QName(parameter_el).localname
-            model_parameters[parameter_el_tag] = parameter_el.text
+            else:
+                parameter_el_tag = etree.QName(node).localname
+                model_parameters[parameter_el_tag] = node.text
         return model_parameters
 
     # read molecule list from xml to data
-    def read_molecule_list(self, el):
+    def read_molecule_list(self, molecule_list_node):
         molecule_list = []
-
-        for molecule_el in el:
-            if isinstance(molecule_el, etree._Comment):
+        for node in molecule_list_node:
+            if isinstance(node, etree._Comment):
                 continue
-            molecule_el_tag = etree.QName(molecule_el).localname
-
-            if molecule_el_tag == "molecule":
-                molecule = {}
-                # read id
-                molecule['id'] = molecule_el.get('id')
-                self.molecules[molecule['id']] = molecule
-
+            node_tag = etree.QName(node).localname
+            if node_tag == "molecule":
+                molecule = {
+                    'id': getAttr(node, 'id')
+                }
                 try:
                     # read properties
-                    property_list = molecule_el.xpath('.//ns:propertyList', namespaces={'ns': self.ns})[0]
-                    for e in property_list:
-                        if isinstance(e, etree._Comment):
+                    property_list = getNode(node, 'propertyList')
+                    for p in property_list:
+                        if isinstance(p, etree._Comment):
                             continue
-                        key = e.get('dictRef').replace('me:', '')
-                        value = e[0].text
+                        data_node = getNode(p, 'scalar')
+                        if data_node is None:
+                            data_node = getNode(p, 'array')
+                        key = p.get('dictRef').replace('me:', '')
+                        value = data_node.text
                         molecule[key] = value
 
-                    if molecule['vibFreqs']:
-                        molecule['vibFreqs'] = separate(molecule['vibFreqs'], ' ')
-                    if molecule['rotConsts']:
-                        molecule['rotConsts'] = separate(molecule['rotConsts'], ' ')
-
                     # read DOSCMethod
-                    dosc_method_node = molecule_el.xpath('.//me:DOSCMethod', namespaces={'me': self.me_ns})[0]
-                    molecule['DOSCMethod'] = dosc_method_node.text if dosc_method_node.text else dosc_method_node.get('name')
+                    dosc_method_node = getNode(node, 'me:DOSCMethod')
+                    molecule['DOSCMethod'] = getAttr(dosc_method_node, 'name')
                 except:
                     pass
+                if molecule.get('vibFreqs'):
+                    molecule['vibFreqs'] = separate(molecule['vibFreqs'], ' ')
+                if molecule.get('rotConsts'):
+                    molecule['rotConsts'] = separate(molecule['rotConsts'], ' ')
                 molecule_list.append(molecule)
+                self.molecules[molecule['id']] = molecule
         return molecule_list
 
 
     # read molecule list from xml to data
-    def read_reaction_list(self, el):
+    def read_reaction_list(self, reaction_node):
         reaction_list = []
 
-        for reaction_el in el:
-            if isinstance(reaction_el, etree._Comment):
+        for node in reaction_node:
+            if isinstance(node, etree._Comment):
                 continue
-
             reaction = {}
-
             # read id
-            reaction['id'] = reaction_el.get('id')
+            reaction['id'] = getAttr(node, 'id')
 
             # read reactant
             try:
-                reactant_list = reaction_el.xpath('.//ns:reactant', namespaces={'ns': self.ns})
+                reactant_list = getNodes(node, 'reactant')
                 for index, value in enumerate(reactant_list):
-                    m = value[0]
-                    reaction['R' + str(index+1) + 'Type'] = m.get('{%s}type' % self.me_ns)
-                    reaction['R' + str(index+1) + 'Ref'] = m.get('ref')
-                    self.molecules[m.get('ref')]['type'] = m.get('{%s}type' % self.me_ns)
+                    m_type = getAttr(value[0], 'type')
+                    if m_type is None:
+                        m_type = getAttr(value[0], 'role')
+                    m_ref = getAttr(value[0], 'ref')
+                    reaction['R' + str(index+1) + 'Type'] = m_type
+                    reaction['R' + str(index+1) + 'Ref'] = m_ref
+                    self.molecules[m_ref]['type'] = m_type
             except:
                 pass
 
             # read product
             try:
-                product_list = reaction_el.xpath('.//ns:product', namespaces={'ns': self.ns})
+                product_list = getNodes(node, 'product')
                 for index, value in enumerate(product_list):
-                    m = value[0]
-                    reaction['P' + str(index+1) + 'Type'] = m.get('{%s}type' % self.me_ns)
-                    reaction['P' + str(index+1) + 'Ref'] = m.get('ref')
-                    self.molecules[m.get('ref')]['type'] = m.get('{%s}type' % self.me_ns)
+                    m_type = getAttr(value[0], 'type')
+                    if m_type is None:
+                        m_type = getAttr(value[0], 'role')
+                    m_ref = getAttr(value[0], 'ref')
+                    reaction['P' + str(index+1) + 'Type'] = m_type
+                    reaction['P' + str(index+1) + 'Ref'] = m_ref
+                    self.molecules[m_ref]['type'] = m_type
             except:
                 pass
 
-            # judge reaction type
+            # reaction type
             if len(reactant_list) == 1 and len(product_list) == 1:
                 reaction['type'] = 'A -> B'
             elif len(reactant_list) == 1 and len(product_list) == 2:
@@ -201,26 +203,27 @@ class MesmerXML:
 
             # read MCRCMethod
             try:
-                mcrc_method = reaction_el.xpath('.//me:MCRCMethod', namespaces={'me': self.me_ns})[0]
-
+                mcrc_method = getNode(node, 'MCRCMethod')
                 # RRKM
-                if mcrc_method.get('name') == 'SimpleRRKM' or mcrc_method.text == 'SimpleRRKM':
+                if getAttr(mcrc_method, 'name', from_text=True) == 'SimpleRRKM':
                     reaction['MCRCMethod'] = 'SimpleRRKM'
-                    transition_state = reaction_el.xpath('.//me:transitionState', namespaces={'me': self.me_ns})[0]
-                    m = transition_state[0]
-                    reaction['TRef'] = m.get('ref')
-                    reaction['TType'] = m.get('type')
-                    self.molecules[m.get('ref')]['type'] = m.get('type')
-
+                    transition_state = getNode(node, 'transitionState')
+                    m_type = getAttr(transition_state[0], 'type')
+                    m_ref = getAttr(transition_state[0], 'ref')
+                    reaction['TRef'] = m_ref
+                    reaction['TType'] = m_type
+                    if m_type is None:
+                        m_type = getAttr(transition_state[0], 'role')
+                    self.molecules[m_ref]['type'] = m_type
                 # ILT parameters
-                elif mcrc_method.get('{%s}type' % self.xsi_ns) == 'MesmerILT' or mcrc_method.text == 'MesmerILT':
-                    pre_exponential = reaction_el.xpath('.//me:preExponential', namespaces={'me': self.me_ns})[0]
+                elif getAttr(mcrc_method, 'type') == 'MesmerILT':
+                    pre_exponential = getNode(node, 'preExponential')
                     reaction['preExponential'] = pre_exponential.text;
 
-                    activation_energy = reaction_el.xpath('.//me:activationEnergy', namespaces={'me': self.me_ns})[0]
+                    activation_energy = getNode(node, 'activationEnergy')
                     reaction['activationEnergy'] = activation_energy.text
 
-                    n_infinity = reaction_el.xpath('.//me:nInfinity', namespaces={'me': self.me_ns})[0]
+                    n_infinity = getNode(node, 'nInfinity')
                     reaction['nInfinity'] = n_infinity.text
             except:
                 pass
@@ -237,24 +240,19 @@ class MesmerXML:
             tag = etree.QName(el).localname
             if tag == 'title':
                 json_data['title'] = el.text
-
-            # moleculeList element
             elif tag == 'moleculeList':
                 json_data["moleculeList"] = self.read_molecule_list(el)
-
-            # reactionList element
             elif tag == 'reactionList':
                 json_data['reactionList'] = self.read_reaction_list(el)
-
-            # conditions element
             elif tag == 'conditions':
                 json_data['conditions'] = self.read_condition(el)
-
-            # modelParameters element
             elif tag == 'modelParameters':
                 json_data['modelParameters'] = self.read_model_parameters(el)
-
-            # control element
             elif tag == 'control':
                 json_data['control'] = self.read_control(el)
         return json_data
+
+# xml = MesmerXML(open('H:\mesmer\phenoxy_2.xml', 'r').read())
+# data = xml.to_json()
+# print data
+

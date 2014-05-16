@@ -704,8 +704,10 @@ var app = app || {};
        })
     });
 
-    $('#openfile').change(function(){
-        var $this = $(this)
+    $('#openfile').on('change', onchange);
+
+    function onchange(){
+        var $this = $(this);
         if ($this.val()){
             $.ajaxFileUpload({
                 url: '/openxml/',
@@ -725,7 +727,9 @@ var app = app || {};
                 }
             })
         }
-    })
+        $this.replaceWith('<input class="btn btn-default" id="openfile" name="openfile" type="file" />');
+        $('#openfile').on('change', onchange);
+    }
 
     function downloadFile(fileName, content){
         var aLink = document.createElement('a');
