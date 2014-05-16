@@ -27,7 +27,7 @@ def parsexml(request):
             xml = MesmerXML(xml_string)
             mesmer_json = xml.to_json()
             response = HttpResponse(json.dumps(mesmer_json))
-            response['Content-Type'] = "application/json; charset=utf-8"
+            # response['Content-Type'] = "application/json; charset=utf-8"
             return response
         except:
             return HttpResponse('{"error": "error"}')
