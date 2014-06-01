@@ -16,6 +16,10 @@ def getAttr(etree_node, attr, from_text=False):
                 break
     if not value and from_text:
         value = etree_node.text
+    try:
+        value = value[value.index(":")+1:]
+    except:
+        pass
     return value
 
 

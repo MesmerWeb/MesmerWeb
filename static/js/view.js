@@ -112,6 +112,7 @@ var app = app || {};
         myRender: function(){
             this.$('#mesmer-title .list-group-item').text(this.model.get('title'));
             this.$('#mesmer-title input').val(this.model.get('title'))
+            $('title').text(this.model.get('title'));
         }
 	});
 
@@ -747,11 +748,13 @@ var app = app || {};
         app.curData.set('filename', $filename.val());
         app.curData.set('title', $title.val());
         $('#renameModal').modal('hide');
-    })
+    });
 
     $('#renameModal').on('show.bs.modal', function (e) {
         $('#renameModal input[target ^= "filename"]').val(app.curData.get('filename'));
         $('#renameModal input[target ^= "title"]').val(app.curData.get('title'));
-    })
+    });
+
+    $('#new').attr('href', location.href);
 })(jQuery);
 

@@ -139,8 +139,8 @@ class MesmerXML:
                         molecule[key] = value
 
                     # read DOSCMethod
-                    dosc_method_node = getNode(node, 'me:DOSCMethod')
-                    molecule['DOSCMethod'] = getAttr(dosc_method_node, 'name')
+                    dosc_method_node = getNode(node, 'DOSCMethod')
+                    molecule['DOSCMethod'] = getAttr(dosc_method_node, 'name', from_text=True)
                 except:
                     pass
                 if molecule.get('vibFreqs'):
