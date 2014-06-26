@@ -105,7 +105,6 @@ def calculate(request):
     else:
         err = cal_process.stderr.read()
         return HttpResponse('{"error": "%s"}' % repr(err)[1:-1])
-
-
+    
 def process_kill(p):
     p.kill()
