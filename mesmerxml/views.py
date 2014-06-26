@@ -9,7 +9,7 @@ from xml.dom import minidom
 from MesmerWeb import settings
 from mesmerxml.xmlclass import MesmerXML
 
-import os, subprocess, json, time, functools, timer
+import os, subprocess, json, time
 
 
 # index for default request
