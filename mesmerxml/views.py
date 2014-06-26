@@ -86,14 +86,14 @@ def calculate(request):
     data = json.loads(request.body)
     t = get_template('xml/mesmer.xml')
     xml = t.render(Context(data))
-    filename = "%s_%s" % (str(time.time()), data.get('title'))
+    filename = ("%s_%s" % (str(time.time()), data.get('title'))).replace(' ', '_')
     filepath  = os.path.abspath(os.path.join(settings.TMP_DIR, filename+".xml"))
     output_filepath = os.path.abspath(os.path.join(settings.TMP_DIR, filename+"_out.xml"))
     with open(filepath, 'w') as destination:
         destination.write(pretty_xml(xml))
     destination.close()
 
-    cal_process = subprocess.Popen('mesmer "%s" -o "%s"' % (filepath, output_filepath), stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+    cal_process = subprocess.Popen(['mesmer', filepath, "-o", output_filepath], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
     log.error("cal_process end")
     i = 0
     while(cal_process.poll() is None and i < 20):
