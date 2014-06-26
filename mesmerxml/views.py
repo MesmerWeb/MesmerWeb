@@ -9,7 +9,7 @@ from xml.dom import minidom
 from MesmerWeb import settings
 from mesmerxml.xmlclass import MesmerXML
 
-import os, subprocess, json, time
+import os, subprocess, json, time, logging
 
 
 # index for default request
@@ -82,6 +82,7 @@ def calculate(request):
     @param request:
     @return:
     '''
+    log = logging.getLogger('test1')
     data = json.loads(request.body)
     t = get_template('xml/mesmer.xml')
     xml = t.render(Context(data))
@@ -93,18 +94,21 @@ def calculate(request):
     destination.close()
 
     cal_process = subprocess.Popen('mesmer "%s" -o "%s"' % (filepath, output_filepath), stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+    log.error("cal_process end")
     i = 0
     while(cal_process.poll() is None and i < 20):
         time.sleep(1)
         i += 1
+    log.error("sleep end")
     if (cal_process.poll() is None):
         cal_process.kill()
     os.remove(filepath)
+    log.error("begin to return")
     if os.path.exists(output_filepath):
         return HttpResponse('{"data": "%s"}' % (filename+"_out.xml"))
     else:
         err = cal_process.stderr.read()
         return HttpResponse('{"error": "%s"}' % repr(err)[1:-1])
-    
+
 def process_kill(p):
     p.kill()
