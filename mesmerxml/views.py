@@ -9,9 +9,7 @@ from xml.dom import minidom
 from MesmerWeb import settings
 from mesmerxml.xmlclass import MesmerXML
 
-import os
-import json
-import time
+import os, subprocess, json, time, functools, timer
 
 
 # index for default request
@@ -67,6 +65,7 @@ def download(path):
     response['Content-Type'] = "text/xml; charset=utf-8"
     return response
 
+
 def read_file(path, buf_size=50000):
     f = open(path, "r")
     while True:
@@ -77,3 +76,36 @@ def read_file(path, buf_size=50000):
             break
     f.close()
     os.remove(path)
+
+def calculate(request):
+    '''
+    @param request:
+    @return:
+    '''
+    data = json.loads(request.body)
+    t = get_template('xml/mesmer.xml')
+    xml = t.render(Context(data))
+    filename = "%s_%s" % (str(time.time()), data.get('title'))
+    filepath  = os.path.abspath(os.path.join(settings.TMP_DIR, filename+".xml"))
+    output_filepath = os.path.abspath(os.path.join(settings.TMP_DIR, filename+"_out.xml"))
+    with open(filepath, 'w') as destination:
+        destination.write(pretty_xml(xml))
+    destination.close()
+
+    cal_process = subprocess.Popen('mesmer "%s" -o "%s"' % (filepath, output_filepath), stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+    i = 0
+    while(cal_process.poll() is None and i < 20):
+        time.sleep(1)
+        i += 1
+    if (cal_process.poll() is None):
+        cal_process.kill()
+    os.remove(filepath)
+    if os.path.exists(output_filepath):
+        return HttpResponse('{"data": "%s"}' % (filename+"_out.xml"))
+    else:
+        err = cal_process.stderr.read()
+        return HttpResponse('{"error": "%s"}' % repr(err)[1:-1])
+
+
+def process_kill(p):
+    p.kill()

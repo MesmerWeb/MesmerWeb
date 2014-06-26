@@ -16,5 +16,6 @@ urlpatterns += patterns('mesmerxml.views',
     (r'^toxml/$', 'toxml'),
     (r'^openxml/$', 'parsexml'),
     (r'^$', 'index'),
-    (r'^download/(?P<filename>.*)$', 'download_xml')
+    (r'^download/(?P<filename>.*)$', 'download_xml'),
+    (r'^calculate/$', 'calculate')
 )

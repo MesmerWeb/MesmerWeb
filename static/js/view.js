@@ -705,6 +705,27 @@ var app = app || {};
        })
     });
 
+    $("#calculate").click(function(e){
+        var postData = JSON.stringify(app.curData.toJSON());
+        $.ajax({
+            url: '/calculate/',
+            async: true,
+            type: 'POST',
+            data: postData,
+            success: function(data, type){
+                var r = JSON.parse(data);
+                if (r.error){
+                    alert(r.error)
+                } else {
+                    var href = 'download/' + r.data;
+                    var iframe = document.getElementById('invisible');
+                    iframe.src = href;
+                }
+
+           }
+       });
+    });
+
     $('#openfile').on('change', onchange);
 
     function onchange(){
