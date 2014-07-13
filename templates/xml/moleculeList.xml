@@ -62,11 +62,11 @@
             </property>
             {% endif %}
 
-{#            {% if molecule.deltaEDownTExponent %}#}
-{#            <property dictRef="me:deltaEDown" >#}
-{#                <scalar units="cm-1">{{ molecule.deltaEDownTExponent }}</scalar>#}
-{#            </property>#}
-{#            {% endif %}#}
+            {% if molecule.deltaEDownTExponent %}
+            <property dictRef="me:deltaEDown" >
+                <scalar units="cm-1">{{ molecule.deltaEDownTExponent }}</scalar>
+            </property>
+            {% endif %}
         </propertyList>
         {% if molecule.DOSCMethod %}
         <me:DOSCMethod name="{{ molecule.DOSCMethod }}"/>

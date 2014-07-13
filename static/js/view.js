@@ -99,8 +99,19 @@ var app = app || {};
 		},
 
 		updateTitle: function(e){
-			this.inputDone(e);
-			$(e.currentTarget).hide().prev().show().text(this.model.get('title'));
+            var $e = $(e.currentTarget);
+            if (!this.checkFilename($e.val())){
+                $e.popover({
+                    content: "Title cannot contains characters like <, >, /, \\, |, :, \", *, ?, !",
+                    placement: "bottom",
+                    trigger: "manual"
+                });
+                $e.popover("show");
+                setTimeout(function(){$e.popover("hide")}, 2000);
+            } else {
+                this.inputDone(e);
+			    $e.hide().prev().show().text(this.model.get('title'));
+            }
 		},
 
 		onEnter: function(e){
@@ -113,6 +124,15 @@ var app = app || {};
             this.$('#mesmer-title .list-group-item').text(this.model.get('title'));
             this.$('#mesmer-title input').val(this.model.get('title'))
             $('title').text(this.model.get('title'));
+        },
+
+        checkFilename: function(filename) {
+            var forbidden = "<>/\\|:\"*?";
+            if (filename.match(/<|>|\/|\\|:|\||"|\*|\?/)){
+                return false;
+            } else {
+                return true;
+            }
         }
 	});
 
@@ -124,7 +144,8 @@ var app = app || {};
 		template: _.template($('#molecule-list-property-template').html()),
 
 		events: {
-			'click button[action ^= "new-molecule"]': 'newMolecule'
+			'click button[action ^= "new-molecule"]': 'newMolecule',
+            'click ul[target="library"] li a': 'addFromLibrary'
 		},
 
 		initialize: function(moleculeList) {
@@ -134,6 +155,7 @@ var app = app || {};
 			this.listenTo(this.moleculeList, 'select', this.selectMolecule);
 			this.listenTo(this.moleculeList, 'remove', this.selectAnother);
             this.listenTo(this.moleculeList, 'reset', this.reset);
+            this.listenTo(this.moleculeList, 'library', this.showLibrary);
 		},
 
 		render: function() {
@@ -150,9 +172,19 @@ var app = app || {};
 			else{
 				this.moleculeList.select(this.moleculeList.selected || molecules[0]);
 			}
-			
-			return this;
+
+            if (this.moleculeList.library)
+                this.showLibrary();
+            return this;
 		},
+
+        showLibrary: function(){
+            var ul = this.$('ul[target^="library"]');
+            for (key in this.moleculeList.library){
+                var li = '<li><a href="#" mol-id="' + key + '">' + key + '</a></li>';
+                ul.append(li);
+            }
+        },
 
         reset: function(){
             if (this.moleculeList.length > 0){
@@ -169,6 +201,18 @@ var app = app || {};
 			this.moleculeList.select(molecule);
 			e.stopPropagation();
 		},
+
+        addFromLibrary: function(e) {
+            var molID = $(e.currentTarget).attr('mol-id');
+            var molecule = new app.Molecule({id: molID});
+            var molFromLibrary = this.moleculeList.library[molID];
+            for (key in molFromLibrary){
+                if (molecule.get(key) != undefined)
+                    molecule.set(key, molFromLibrary[key].value || molFromLibrary[key]);
+            }
+            var mol = this.moleculeList.add(molecule);
+			this.moleculeList.select(mol);
+        },
 
 		addMolecule: function(molecule) {
 			var itemView = new app.MoleculeItemView({model: molecule});
@@ -583,7 +627,9 @@ var app = app || {};
 		// The DOM events specific to an item.
 		events: {
 			'click .group-head button': 'newPT',
-			'click ul[role ^= "menu"] a': 'selectMenu'
+			'click ul[role ^= "menu"] a': 'selectMenu',
+            'blur input': 'inputDone',
+			'keydown input': 'onEnter'
 		},
 
 		initialize: function(o, moleculeList) {

@@ -1,74 +1,74 @@
 var app = app || {};
 
 app.constant = {
-	reactionType: {
-		'one2one': 'A -> B',
-		'one2two': 'A -> B + C',
-		'two2one': 'A + B -> C',
-		'two2two': 'A + B -> C + D'
-	},
-	reactantType: {
-		model: 'modelled',
-		deficient: 'deficientReactant',
-		excess: 'excessReactant',
-		transition: 'transitionState',
-		sink: 'sink'
-	},
-	moleculeType: {
-		ER: 'excessReactant',
-	    DR: 'deficientReactant',
-	    SM: 'sink',
-	    MM: 'modelled',
-	   	TS: 'transitionState',
-	    BG: 'bathGas'
-	},
-	moleculeParameter: {
-		'excessReactant': ['MW', 'sigma', 'epsilon', 'deltaEDown', 'deltaEDownTExponent', 'referenceTemperature'],
-	    'deficientReactant': ['MW', 'sigma', 'epsilon', 'deltaEDown', 'deltaEDownTExponent', 'referenceTemperature'],
-	    'sink': ['MW', 'sigma', 'epsilon', 'rotConsts', 'symmetryNumber', 'vibFreqs', 'frequenciesScaleFactor', 'spinMultiplicity', 'deltaEDown', 'deltaEDownTExponent', 'referenceTemperature'],
-	    'modelled': [],
-	   	'transitionState': ['MW', 'sigma', 'epsilon', 'deltaEDown', 'deltaEDownTExponent', 'referenceTemperature'],
-	    'bathGas': ['rotConsts', 'symmetryNumber', 'ZPE', 'vibFreqs', 'frequenciesScaleFactor', 'spinMultiplicity', 'deltaEDown', 'deltaEDownTExponent', 'referenceTemperature']
-	}
+    reactionType: {
+        'one2one': 'A -> B',
+        'one2two': 'A -> B + C',
+        'two2one': 'A + B -> C',
+        'two2two': 'A + B -> C + D'
+    },
+    reactantType: {
+        model: 'modelled',
+        deficient: 'deficientReactant',
+        excess: 'excessReactant',
+        transition: 'transitionState',
+        sink: 'sink'
+    },
+    moleculeType: {
+        ER: 'excessReactant',
+        DR: 'deficientReactant',
+        SM: 'sink',
+        MM: 'modelled',
+        TS: 'transitionState',
+        BG: 'bathGas'
+    },
+    moleculeParameter: {
+        'excessReactant': ['MW', 'sigma', 'epsilon', 'deltaEDown', 'deltaEDownTExponent', 'referenceTemperature'],
+        'deficientReactant': ['MW', 'sigma', 'epsilon', 'deltaEDown', 'deltaEDownTExponent', 'referenceTemperature'],
+        'sink': ['MW', 'sigma', 'epsilon', 'rotConsts', 'symmetryNumber', 'vibFreqs', 'frequenciesScaleFactor', 'spinMultiplicity', 'deltaEDown', 'deltaEDownTExponent', 'referenceTemperature'],
+        'modelled': [],
+        'transitionState': ['MW', 'sigma', 'epsilon', 'deltaEDown', 'deltaEDownTExponent', 'referenceTemperature'],
+        'bathGas': ['rotConsts', 'symmetryNumber', 'ZPE', 'vibFreqs', 'frequenciesScaleFactor', 'spinMultiplicity', 'deltaEDown', 'deltaEDownTExponent', 'referenceTemperature']
+    }
 };
 
 /*Molecule Model*/
 app.Molecule = Backbone.Model.extend({
-	defaults: {
-		type: app.constant.moleculeType.MM, 
-		id: '',
-		ZPE: '',
+    defaults: {
+        type: app.constant.moleculeType.MM,
+        id: '',
+        ZPE: '',
         ZPE_unit: 'cm-1',
-		rotConsts: '',
+        rotConsts: '',
         rotConsts_unit: 'cm-1',
-		vibFreqs: '',
-		frequenciesScaleFactor: '',
-		symmetryNumber: '',
-		MW: '',
-		spinMultiplicity: '',
-		epsilon: '',
-		sigma: '',
-		deltaEDown: '',
+        vibFreqs: '',
+        frequenciesScaleFactor: '',
+        symmetryNumber: '',
+        MW: '',
+        spinMultiplicity: '',
+        epsilon: '',
+        sigma: '',
+        deltaEDown: '',
         DOSCMethod: 'ClassicalRotors',
         deltaEDownTExponent: '',
         referenceTemperature: '298'
-	},
+    },
 
-	urlRoot: '/',
+    urlRoot: '/',
 
-	sync: function(method, model) {
-		
-	},
+    sync: function(method, model) {
 
-	fromJSON: function(data){
-		if (!data)
-			return;
-		this.set(data);
-	},
+    },
 
-    convert_unit: function(data){
+    fromJSON: function(data) {
+        if (!data)
+            return;
+        this.set(data);
+    },
+
+    convert_unit: function(data) {
         // convert ZPE_unit to default(1/cm)
-        switch (data['ZPE_unit']){
+        switch (data['ZPE_unit']) {
             case 'kCal/mol':
                 data['ZPE'] = data['ZPE'] * 349.757;
                 break;
@@ -81,10 +81,10 @@ app.Molecule = Backbone.Model.extend({
         data['ZPE_unit'] = '1/cm';
 
         // convert rotConsts_unit to default(1/cm)
-        switch (data['rotConsts_unit']){
+        switch (data['rotConsts_unit']) {
             case 'GHz':
                 value = data['rotConsts'].split(/\s+/);
-                for (var i = 0; i < value.length; i++){
+                for (var i = 0; i < value.length; i++) {
                     value[i] = parseFloat(value[i]);
                     value[i] *= 0.0334;
                 }
@@ -98,289 +98,297 @@ app.Molecule = Backbone.Model.extend({
 });
 
 app.MoleculeList = Backbone.Collection.extend({
-	model: app.Molecule,
+    model: app.Molecule,
 
-	url: '/',
+    url: '/',
 
     seq: 0,
 
-	sync: function(method, model) {
-		
-	},
+    initialize: function(){
+        var local = this;
+        $.get('/library/', function(response,status,xhr){
+            local.library = JSON.parse(response);
+            local.trigger('library');
+        })
+    },
 
-	nextOrder: function() {
-		return this.length + 1;
-	},
+    sync: function(method, model) {
 
-	select: function(el) {
-		this.selected = el;
-		this.trigger("select", el);
-		el.trigger("selected");
-	},
+    },
 
-	fromJSON: function(list){
-		/*if (list){
+    nextOrder: function() {
+        return this.length + 1;
+    },
+
+    select: function(el) {
+        this.selected = el;
+        this.trigger("select", el);
+        el.trigger("selected");
+    },
+
+    fromJSON: function(list) {
+        /*if (list){
 			for (i=0; i<list.length; i++){
 				molecule = new app.Molecule(list[i]);
 				this.add(molecule);
 			}
 		}*/
-		if (list){
-			var new_models = [];
-			for (i=0; i<list.length; i++){
-				molecule = new app.Molecule(list[i]);
-				new_models.push(molecule);
-			}
-			this.reset(new_models);
-			this.selected = null;
-		}
-	}
+        if (list) {
+            var new_models = [];
+            for (i = 0; i < list.length; i++) {
+                molecule = new app.Molecule(list[i]);
+                new_models.push(molecule);
+            }
+            this.reset(new_models);
+            this.selected = null;
+        }
+    }
 });
 
 app.Reaction = Backbone.Model.extend({
-	defaults: {
+    defaults: {
         id: '',
-		type: app.constant.reactionType.one2one,
-		R1Type: app.constant.reactantType.model,
-		R1Ref: '',
-		
-		R2Type: app.constant.reactantType.model,
-		R2Ref: '',
-		
-		P1Type: app.constant.reactantType.model,
-		P1Ref: '',
-		
-		P2Type: app.constant.reactantType.model,
-		P2Ref: '',
+        type: app.constant.reactionType.one2one,
+        R1Type: app.constant.reactantType.model,
+        R1Ref: '',
 
-		TType: app.constant.reactantType.transition,
-		TRef: '',
-		
-		MCRCMethod: 'MesmerILT',
-		preExponential: '',
-		activationEnergy: '',
-		nInfinity: '',
-		excessReactantConc: ''
-	},
-	sync: function(method, model) {
-		
-	},
-	urlRoot: '/',
+        R2Type: app.constant.reactantType.model,
+        R2Ref: '',
 
-	fromJSON: function(data){
-		if (!data)
-			return;
-		this.set(data);
-	}
+        P1Type: app.constant.reactantType.model,
+        P1Ref: '',
+
+        P2Type: app.constant.reactantType.model,
+        P2Ref: '',
+
+        TType: app.constant.reactantType.transition,
+        TRef: '',
+
+        MCRCMethod: 'MesmerILT',
+        preExponential: '',
+        activationEnergy: '',
+        nInfinity: '',
+        excessReactantConc: ''
+    },
+    sync: function(method, model) {
+
+    },
+    urlRoot: '/',
+
+    fromJSON: function(data) {
+        if (!data)
+            return;
+        this.set(data);
+    }
 });
 
 app.ReactionList = Backbone.Collection.extend({
-	model: app.Reaction,
+    model: app.Reaction,
 
     seq: 0,
 
-	nextOrder: function() {
-		return this.length + 1;
-	},
-	sync: function(method, model) {
-		
-	},
+    nextOrder: function() {
+        return this.length + 1;
+    },
+    sync: function(method, model) {
 
-	url: '/',
+    },
 
-	select: function(el) {
-		this.selected = el;
-		this.trigger("select", el);
-		el.trigger("selected");
-	},
+    url: '/',
 
-	fromJSON: function(list){
-		if (list){
-			var new_models = [];
-			for (i=0; i<list.length; i++){
-				reaction = new app.Reaction(list[i]);
-				new_models.push(reaction);
-			}
-			this.reset(new_models);
-			this.selected = null;
-		}
-	}
+    select: function(el) {
+        this.selected = el;
+        this.trigger("select", el);
+        el.trigger("selected");
+    },
+
+    fromJSON: function(list) {
+        if (list) {
+            var new_models = [];
+            for (i = 0; i < list.length; i++) {
+                reaction = new app.Reaction(list[i]);
+                new_models.push(reaction);
+            }
+            this.reset(new_models);
+            this.selected = null;
+        }
+    }
 });
 
 app.Control = Backbone.Model.extend({
-	defaults: {
-		eigenvalues: '',
-		calcMethod: 'simpleCalc',
-		options: {
-			printCellDOS: false,
-			printCellTransitionStateFlux: false,
-			printReactionOperatorColumnSums: false,
-			printGrainBoltzmann: false,
-			printGrainDOS: false,
-			printGrainkbE: false,
-			printGrainkfE: false,
-			printTSsos: false,
-			printGrainedSpeciesProfile: false,
-			printGrainTransitionStateFlux: false,
-			printReactionOperatorSizematrix: false,
-			printSpeciesProfile: false,
-			printTunnelingCoefficients: false,
-			printTunnellingCoefficients: false,
-			printCrossingCoefficients: false,
-			MaximumEvolutionTime: false,
-			testDOS: false,
-			testMicroRates: false,
-			testRateConstants: false,
-			useTheSameCellNumberForAllConditions: false,
-			hideInactive: false
-		}
-	},
-	sync: function(method, model) {
-		
-	},
-	urlRoot: '/',
+    defaults: {
+        eigenvalues: '',
+        calcMethod: 'simpleCalc',
+        options: {
+            printCellDOS: false,
+            printCellTransitionStateFlux: false,
+            printReactionOperatorColumnSums: false,
+            printGrainBoltzmann: false,
+            printGrainDOS: false,
+            printGrainkbE: false,
+            printGrainkfE: false,
+            printTSsos: false,
+            printGrainedSpeciesProfile: false,
+            printGrainTransitionStateFlux: false,
+            printReactionOperatorSizematrix: false,
+            printSpeciesProfile: false,
+            printTunnelingCoefficients: false,
+            printTunnellingCoefficients: false,
+            printCrossingCoefficients: false,
+            MaximumEvolutionTime: false,
+            testDOS: false,
+            testMicroRates: false,
+            testRateConstants: false,
+            useTheSameCellNumberForAllConditions: false,
+            hideInactive: false
+        }
+    },
+    sync: function(method, model) {
 
-	fromJSON: function(data){
-		this.set(data);
-	}
+    },
+    urlRoot: '/',
+
+    fromJSON: function(data) {
+        this.set(data);
+    }
 });
 
 app.ModelParameters = Backbone.Model.extend({
-	defaults: {
-		grainSize: '',
-		energyAboveTheTopHill: '',
-		maxTemperature: ''
-	},
-	sync: function(method, model) {
-		
-	},
-	urlRoot: '/',
+    defaults: {
+        grainSize: '',
+        energyAboveTheTopHill: '',
+        maxTemperature: ''
+    },
+    sync: function(method, model) {
 
-	fromJSON: function(data){
-		if (!data)
-			return;
-		this.set(data);
-	}
+    },
+    urlRoot: '/',
+
+    fromJSON: function(data) {
+        if (!data)
+            return;
+        this.set(data);
+    }
 });
 
 app.PT = Backbone.Model.extend({
-	defaults: {
-		P: '',
-		T: ''
-	},
-	sync: function(method, model) {
-		
-	},
-	urlRoot: '/',
+    defaults: {
+        P: '',
+        T: ''
+    },
+    sync: function(method, model) {
 
-	fromJSON: function(data){
-		if (!data)
-			return;
-		this.set(data);
-	}
+    },
+    urlRoot: '/',
+
+    fromJSON: function(data) {
+        if (!data)
+            return;
+        this.set(data);
+    }
 });
 
 app.PTS = Backbone.Collection.extend({
-	model: app.PT,
-	sync: function(method, model) {
-		
-	},
+    model: app.PT,
+    sync: function(method, model) {
 
-	url: '/',
+    },
 
-	fromJSON: function(list){
-		//if (list){
-		//	for (i=0; i<list.length; i++){
-		//		pt = new app.PT(list[i]);
-		//		this.add(pt);
-		//	}
-		//}
-		if (list){
-			var new_models = [];
-			for (i=0; i<list.length; i++){
-				pt = new app.PT(list[i]);
-				new_models.push(pt);
-			}
-			this.reset(new_models);
-		}
-	}
+    url: '/',
+
+    fromJSON: function(list) {
+        //if (list){
+        //	for (i=0; i<list.length; i++){
+        //		pt = new app.PT(list[i]);
+        //		this.add(pt);
+        //	}
+        //}
+        if (list) {
+            var new_models = [];
+            for (i = 0; i < list.length; i++) {
+                pt = new app.PT(list[i]);
+                new_models.push(pt);
+            }
+            this.reset(new_models);
+        }
+    }
 });
 
 app.Conditions = Backbone.Model.extend({
-	defaults: {
-		bathGas: '',
-		units: 'PPCC',
+    defaults: {
+        bathGas: '',
+        units: 'PPCC',
         initialPopulation: '',
         initialPopulationRef: '',
-		PTs: new app.PTS()
-	},
-	sync: function(method, model) {
-		
-	},
-	urlRoot: '/',
+        PTs: new app.PTS()
+    },
+    sync: function(method, model) {
 
-	fromJSON: function(data){
-		if (data){
-			this.set('bathGas', data['bathGas'] || '');
-			this.set('units', data['units'] || '');
+    },
+    urlRoot: '/',
+
+    fromJSON: function(data) {
+        if (data) {
+            this.set('bathGas', data['bathGas'] || '');
+            this.set('units', data['units'] || '');
             this.set('initialPopulation', data['initialPopulation'] || '');
-			this.set('initialPopulationRef', data['initialPopulationRef'] || '');
-			this.get('PTs').fromJSON(data['PTs']);
-		}
-	}
+            this.set('initialPopulationRef', data['initialPopulationRef'] || '');
+            this.get('PTs').fromJSON(data['PTs']);
+        }
+    }
 });
 
 app.MesmerData = Backbone.Model.extend({
-	defaults: {
+    defaults: {
         title: 'MESMER Title',
-		moleculeList: new app.MoleculeList(),
-		reactionList: new app.ReactionList(),
-		control: new app.Control(),
-		modelParameters: new app.ModelParameters(),
-		conditions: new app.Conditions()
-	},
+        moleculeList: new app.MoleculeList(),
+        reactionList: new app.ReactionList(),
+        control: new app.Control(),
+        modelParameters: new app.ModelParameters(),
+        conditions: new app.Conditions()
+    },
 
-	sync: function(method, model) {
-		
-	},
+    sync: function(method, model) {
 
-	urlRoot: '/',
+    },
 
-	toJSON: function(){
-		var result = {};
+    urlRoot: '/',
+
+    toJSON: function() {
+        var result = {};
 
         result.title = this.get('title');
-		var moleculeList = this.get('moleculeList').models;
-		result.moleculeList = [];
-		for (i=0; i<moleculeList.length; i++){
+        var moleculeList = this.get('moleculeList').models;
+        result.moleculeList = [];
+        for (i = 0; i < moleculeList.length; i++) {
             var molecule = moleculeList[i].toJSON();
             moleculeList[i].convert_unit(molecule);
             result.moleculeList.push(molecule);
         }
 
-		var reactionList = this.get('reactionList').models;
-		result.reactionList = [];
-		for (i=0; i<reactionList.length; i++)
-			result.reactionList.push(reactionList[i].toJSON());
+        var reactionList = this.get('reactionList').models;
+        result.reactionList = [];
+        for (i = 0; i < reactionList.length; i++)
+            result.reactionList.push(reactionList[i].toJSON());
 
-		var control = this.get('control');
-		result.control = control.toJSON();
+        var control = this.get('control');
+        result.control = control.toJSON();
 
-		var modelParameters = this.get('modelParameters');
-		result.modelParameters = modelParameters.toJSON();
+        var modelParameters = this.get('modelParameters');
+        result.modelParameters = modelParameters.toJSON();
 
-		var conditions = this.get('conditions');
-		result.conditions = conditions.toJSON();
+        var conditions = this.get('conditions');
+        result.conditions = conditions.toJSON();
 
-		return result;
-	},
+        return result;
+    },
 
-	fromJSON: function(data){
-		this.set('title', data['title'])
-		this.get('moleculeList').fromJSON(data['moleculeList']);
-		this.get('reactionList').fromJSON(data['reactionList']);
-		this.get('control').fromJSON(data['control']);
-		this.get('modelParameters').fromJSON(data['modelParameters']);
-		this.get('conditions').fromJSON(data['conditions']);
-	}
+    fromJSON: function(data) {
+        this.set('title', data['title'])
+        this.get('moleculeList').fromJSON(data['moleculeList']);
+        this.get('reactionList').fromJSON(data['reactionList']);
+        this.get('control').fromJSON(data['control']);
+        this.get('modelParameters').fromJSON(data['modelParameters']);
+        this.get('conditions').fromJSON(data['conditions']);
+    }
 });

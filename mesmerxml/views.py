@@ -112,3 +112,8 @@ def calculate(request):
 
 def process_kill(p):
     p.kill()
+
+def get_library(request):
+    with open(os.path.join(settings.BASE_DIR, 'mesmerxml/molecule_library.json'), 'r') as f:
+        library = f.read()
+    return HttpResponse(library)

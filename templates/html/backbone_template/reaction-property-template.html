@@ -162,7 +162,7 @@
 	        <% if (R1Type === 'excessReactant' || (R2Type === 'excessReactant' && (type === 'A + B -> C' || type === 'A + B -> C + D'))) {%>
 	        <div class="input-group" id = "excess-option">
 	            <span class="input-group-addon">Excess Concentration</span>
-	            <input type="text" class="form-control" placeholder="excess reactant concentration" target = 'excessReactantConc'>
+	            <input type="text" class="form-control" placeholder="excess reactant concentration" target = 'excessReactantConc' value = '<%= excessReactantConc%>'>
 	        </div>
 	        <% } %>
 	    </div>
