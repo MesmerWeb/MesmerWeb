@@ -585,14 +585,13 @@ var app = app || {};
 		events: {
 			'blur input': 'inputDone',
 			'keydown input': 'onEnter',
-			'click button[action ^= "delete"]': 'del'
+			'click button[action ^= "delete"]': 'del',
+            'click ul[role ^= "menu"] a': 'selectMenu'
 		},
 
 		initialize: function() {
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.model, 'destroy', this.remove);
-			
-			this.$el.addClass('table-like');
 			this.render();
 		},
 		
@@ -644,20 +643,16 @@ var app = app || {};
 			this.listenTo(this.moleculeList, 'all', this.showMoleculeList);
 		},
 
-
 		render: function() {
 			this.$el.html(this.template(this.model.toJSON()));
 			this.showMoleculeList();
-            var $left = this.$('.col-xs-6:first'),
-                $right = this.$('.col-xs-6:nth-child(2)'),
+            var $el = this.$('.col-xs-12'),
                 models = this.pts.models;
             var view, el, j = 0;
             for (var i = 0; i < models.length; i++){
 	            if (models[i].get('P') || models[i].get('T')){
 		            view = new app.PTView({model: models[i]});
-                	el = j % 2 ? $right : $left;
-                	el.append(view.render().el);
-                	++j;
+                	$el.append(view.render().el);
 	            }
             }
 			return this;
@@ -673,12 +668,13 @@ var app = app || {};
 		},
 
 		addPT: function(model) {
-            var $left = this.$('.col-xs-6:first'),
-                $right = this.$('.col-xs-6:nth-child(2)'),
-                left_len = $left.children().length,
-                right_len = $right.children().length,
-                $el = left_len <= right_len ? $left : $right,
-			    view = new app.PTView({model: model});
+//            var $left = this.$('.col-xs-6:first'),
+//                $right = this.$('.col-xs-6:nth-child(2)'),
+//                left_len = $left.children().length,
+//                right_len = $right.children().length,
+//                $el = left_len <= right_len ? $left : $right,
+            var $el = this.$('.col-xs-12');
+			var view = new app.PTView({model: model});
 			$el.append(view.render().el);
 			view.$el.find('input:first-child').focus();
 		},

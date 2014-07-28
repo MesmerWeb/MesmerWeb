@@ -6,9 +6,9 @@
 
 /* Account for fixed navbar */
 body {
-  padding-top: 50px;
-  min-width: 1000px;
-  margin: 0 auto;
+    padding-top: 50px;
+    min-width: 1000px;
+    margin: 0 auto;
 }
 
 /* Finesse the page header spacing */

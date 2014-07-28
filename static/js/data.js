@@ -164,7 +164,7 @@ app.Reaction = Backbone.Model.extend({
         TType: app.constant.reactantType.transition,
         TRef: '',
 
-        MCRCMethod: 'MesmerILT',
+        MCRCMethod: 'SimpleRRKM',
         preExponential: '',
         activationEnergy: '',
         nInfinity: '',
@@ -274,7 +274,8 @@ app.ModelParameters = Backbone.Model.extend({
 app.PT = Backbone.Model.extend({
     defaults: {
         P: '',
-        T: ''
+        T: '',
+        precision: 'double'
     },
     sync: function(method, model) {
 
