@@ -209,6 +209,8 @@ var app = app || {};
             for (key in molFromLibrary){
                 if (molecule.get(key) != undefined)
                     molecule.set(key, molFromLibrary[key].value || molFromLibrary[key]);
+                if (key == "ZPE")
+                    molecule.set('ZPE_unit', molFromLibrary[key].units || "cm-1");
             }
             var mol = this.moleculeList.add(molecule);
 			this.moleculeList.select(mol);

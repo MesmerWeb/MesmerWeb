@@ -78,7 +78,7 @@ app.Molecule = Backbone.Model.extend({
             default:
                 break;
         }
-        data['ZPE_unit'] = '1/cm';
+        data['ZPE_unit'] = 'cm-1';
 
         // convert rotConsts_unit to default(1/cm)
         switch (data['rotConsts_unit']) {
@@ -93,7 +93,7 @@ app.Molecule = Backbone.Model.extend({
             default:
                 break;
         }
-        data['rotConsts_unit'] = '1/cm'
+        data['rotConsts_unit'] = 'cm-1'
     }
 });
 
@@ -104,9 +104,9 @@ app.MoleculeList = Backbone.Collection.extend({
 
     seq: 0,
 
-    initialize: function(){
+    initialize: function() {
         var local = this;
-        $.get('/library/', function(response,status,xhr){
+        $.get('/library/', function(response, status, xhr) {
             local.library = JSON.parse(response);
             local.trigger('library');
         })
@@ -318,6 +318,7 @@ app.Conditions = Backbone.Model.extend({
     defaults: {
         bathGas: '',
         units: 'PPCC',
+        precision: 'double',
         initialPopulation: '',
         initialPopulationRef: '',
         PTs: new app.PTS()

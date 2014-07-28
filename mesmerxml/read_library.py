@@ -38,7 +38,12 @@ def read_library(filename):
                 value_node = property_node[0]
                 tag = etree.QName(value_node).localname
                 units = getAttr(value_node, "units")
-                value = [float(i) for i in value_node.text.split(" ")]
+                value = []
+                for i in value_node.text.split(" "):
+                    try:
+                        value.append(float(i))
+                    except:
+                        pass
                 if units is not None:
                     data["units"] = units
                 else:

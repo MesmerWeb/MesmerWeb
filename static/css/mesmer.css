@@ -190,15 +190,35 @@ body{
 	overflow: hidden;
 }
 
-form[name ^= 'uploadxml'], input[type ^= 'file']{
+form[name='openxml']{
 	position: absolute;
 	top: 0;
 	left: 0;
 	opacity: 0;
 	filter:alpha(opacity=0);
 	width: 100%;
-	height: 34px;
+	height: 100%;
 }
+
+input[type='file'] {
+    width: 100%;
+    height: 100%;
+}
+
+
+
+/*form[name='openxml']{*/
+    /*display: inline-block;*/
+	/*position: absolute;*/
+	/*top: 0;*/
+	/*left: 0;*/
+	/*opacity: 0;*/
+	/*filter:alpha(opacity=0);*/
+	/*width: 100%;*/
+	/*height: 100%;*/
+    /*margin: 0;*/
+    /*padding: 0;*/
+/*}*/
 
 
 /* percentage */
