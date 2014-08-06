@@ -94,7 +94,7 @@ class MesmerXML:
                 if tag == 'eigenvalues':
                     control['eigenvalues'] = node.text
                 elif tag == 'calcMethod':
-                    control['calcMethod'] = node.text
+                    control['calcMethod'] = getAttr(node, 'name', True)
                 else:
                     try:
                         self.control_options.index(tag)
@@ -217,6 +217,7 @@ class MesmerXML:
                     self.molecules[m_ref]['type'] = m_type
                 # ILT parameters
                 elif getAttr(mcrc_method, 'type') == 'MesmerILT':
+                    reaction['MCRCMethod'] = 'MesmerILT'
                     pre_exponential = getNode(node, 'preExponential')
                     reaction['preExponential'] = pre_exponential.text;
 

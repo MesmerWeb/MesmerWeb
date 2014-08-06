@@ -2,9 +2,6 @@
     {% if modelParameters.grainSize %}
     <me:grainSize units="cm-1">{{ modelParameters.grainSize }}</me:grainSize>
     {% endif %}
-    {% if modelParameters.maxTemperature %}
-    <me:maxTemperature>{{ modelParameters.maxTemperature }}</me:maxTemperature>
-    {% endif %}
     {% if modelParameters.energyAboveTheTopHill %}
     <me:energyAboveTheTopHill>{{ modelParameters.energyAboveTheTopHill }}</me:energyAboveTheTopHill>
     {% endif %}

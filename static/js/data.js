@@ -50,8 +50,7 @@ app.Molecule = Backbone.Model.extend({
         sigma: '',
         deltaEDown: '',
         DOSCMethod: 'ClassicalRotors',
-        deltaEDownTExponent: '',
-        referenceTemperature: '298'
+        deltaEDownTExponent: ''
     },
 
     urlRoot: '/',
@@ -256,8 +255,7 @@ app.Control = Backbone.Model.extend({
 app.ModelParameters = Backbone.Model.extend({
     defaults: {
         grainSize: '',
-        energyAboveTheTopHill: '',
-        maxTemperature: ''
+        energyAboveTheTopHill: ''
     },
     sync: function(method, model) {
 
@@ -319,7 +317,6 @@ app.Conditions = Backbone.Model.extend({
     defaults: {
         bathGas: '',
         units: 'PPCC',
-        precision: 'double',
         initialPopulation: '',
         initialPopulationRef: '',
         PTs: new app.PTS()

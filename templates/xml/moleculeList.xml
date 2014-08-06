@@ -63,7 +63,7 @@
             {% endif %}
 
             {% if molecule.deltaEDownTExponent %}
-            <property dictRef="me:deltaEDown" >
+            <property dictRef="me:deltaEDownTExponent" >
                 <scalar units="cm-1">{{ molecule.deltaEDownTExponent }}</scalar>
             </property>
             {% endif %}
