@@ -165,7 +165,9 @@ app.Reaction = Backbone.Model.extend({
 
         MCRCMethod: 'SimpleRRKM',
         preExponential: '',
+        preExponential_unit: 'cm3molecule-1s-1',
         activationEnergy: '',
+        activationEnergy_unit: 'kJ/mol',
         nInfinity: '',
         excessReactantConc: ''
     },
@@ -361,7 +363,7 @@ app.MesmerData = Backbone.Model.extend({
         result.moleculeList = [];
         for (i = 0; i < moleculeList.length; i++) {
             var molecule = moleculeList[i].toJSON();
-            moleculeList[i].convert_unit(molecule);
+            //moleculeList[i].convert_unit(molecule);
             result.moleculeList.push(molecule);
         }
 

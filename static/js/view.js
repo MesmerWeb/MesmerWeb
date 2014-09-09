@@ -328,6 +328,9 @@ var app = app || {};
 			for (i = 0; i < items.length; i++){
 				this.$("[target = " + items[i] + "]").parent().hide();
 			}
+            if (this.model.get('type') == 'sink' || this.model.get('type') == 'bathGas'){
+                this.$("[target=DOSCMethod]").parent().parent().hide();
+            }
 		},
 
 		setModel: function (model) {

@@ -29,8 +29,8 @@
         </me:transitionState>
         {% endif %}
         {% if reaction.MCRCMethod == 'MesmerILT' %}
-        <me:preExponential>{{ reaction.preExponential }}</me:preExponential>
-        <me:activationEnergy units="kJ/mol">{{ reaction.activationEnergy }}</me:activationEnergy>
+        <me:preExponential units="{{ reaction.preExponential_unit }}">{{ reaction.preExponential }}</me:preExponential>
+        <me:activationEnergy units="{{ reaction.activationEnergy_unit }}">{{ reaction.activationEnergy }}</me:activationEnergy>
         <me:nInfinity>{{ reaction.nInfinity }}</me:nInfinity>
         {% endif %}
     </reaction>

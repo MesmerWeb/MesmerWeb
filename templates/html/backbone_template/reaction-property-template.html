@@ -122,7 +122,7 @@
 		</div>
         <div class = 'col-xs-6'>
 	        <div class="input-group">
-	            <span class="input-group-addon">MCRCMethod</span>
+	            <span class="input-group-addon" >MCRCMethod</span>
 	            <div class="btn-group" >
 	              <button type="button" data-button = "data-button" class="btn btn-default half <%= MCRCMethod === 'MesmerILT'? 'active' : ''%>" val = "MesmerILT" target = "MCRCMethod">ILT</button>
 	              <button type="button" data-button = "data-button" class="btn btn-default half <%= MCRCMethod === 'SimpleRRKM'? 'active' : ''%>" val = "SimpleRRKM" target = "MCRCMethod">RRKM</button>
@@ -146,11 +146,29 @@
 	        <div class="input-group" id = "preExponential">
 	            <span class="input-group-addon">PreExponential</span>
 	            <input type="text" class="form-control" placeholder="preExponential" target = 'preExponential' value = '<%= preExponential%>'>
+                <div class="btn-group" style="display:table-cell; width:120px">
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="font-size:7px;font-style:italic;height:34px;padding:0">
+                    <%= preExponential_unit %>  <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu" target = 'preExponential_unit'>
+                      <li><a href = "#" val = "cm3molecule-1s-1">cm3molecule-1s-1</a></li>
+                      <li><a href = "#" val = "cm3mole-1s-1">cm3mole-1s-1</a></li>
+                  </ul>
+                </div>
 	        </div>
 
 	        <div class="input-group" id = "activationEnergy">
 	            <span class="input-group-addon">ActivationEnergy</span>
 	            <input type="text" class="form-control" placeholder="activationEnergy" target = 'activationEnergy' value = '<%= activationEnergy%>'>
+                <div class="btn-group" style="display:table-cell; width:120px">
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="font-size:7px;font-style:italic;height:34px;padding:0">
+                    <%= activationEnergy_unit %>  <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu" target = 'activationEnergy_unit' >
+                      <li><a href = "#" val = "kJ/mol">kJ/mol</a></li>
+                      <li><a href = "#" val = "kcal/mol">kcal/mol</a></li>
+                  </ul>
+                </div>
 	        </div>
 
 	        <div class="input-group" id = "nInfinity">

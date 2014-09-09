@@ -56,11 +56,11 @@
             </property>
             {% endif %}
 
-            {% if molecule.deltaEDown %}
-            <property dictRef="me:deltaEDown">
-                <scalar units="cm-1">{{ molecule.deltaEDown }}</scalar>
-            </property>
-            {% endif %}
+{#            {% if molecule.deltaEDown %}#}
+{#            <property dictRef="me:deltaEDown">#}
+{#                <scalar units="cm-1">{{ molecule.deltaEDown }}</scalar>#}
+{#            </property>#}
+{#            {% endif %}#}
 
             {% if molecule.deltaEDownTExponent %}
             <property dictRef="me:deltaEDownTExponent" >
@@ -70,6 +70,11 @@
         </propertyList>
         {% if molecule.DOSCMethod %}
         <me:DOSCMethod name="{{ molecule.DOSCMethod }}"/>
+        {% endif %}
+        {% if molecule.deltaEDown %}
+        <me:energyTransferModel xsi:type="me:ExponentialDown">
+            <me:deltaEDown units="cm-1">{{ molecule.deltaEDown }}</me:deltaEDown>
+        </me:energyTransferModel>
         {% endif %}
     </molecule>
     {% endfor %}
