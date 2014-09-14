@@ -4,7 +4,7 @@
         <propertyList>
             {% if molecule.ZPE %}
             <property dictRef="me:ZPE">
-                <scalar units="cm-1">{{ molecule.ZPE }}</scalar>
+                <scalar units="{{ molecule.ZPE_unit }}">{{ molecule.ZPE }}</scalar>
             </property>
             {% endif %}
 

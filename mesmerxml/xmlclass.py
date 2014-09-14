@@ -137,6 +137,8 @@ class MesmerXML:
                         key = p.get('dictRef').replace('me:', '')
                         value = data_node.text
                         molecule[key] = value
+                        if key == 'ZPE':
+                            molecule['ZPE_unit'] = getAttr(data_node, 'units')
 
                     # read DOSCMethod
                     dosc_method_node = getNode(node, 'DOSCMethod')
@@ -222,13 +224,15 @@ class MesmerXML:
                         m_type = getAttr(transition_state[0], 'role')
                     self.molecules[m_ref]['type'] = m_type
                 # ILT parameters
-                elif getAttr(mcrc_method, 'type') == 'MesmerILT':
+                elif getAttr(mcrc_method, 'type') == 'MesmerILT' or getAttr(mcrc_method, 'name') == 'MesmerILT':
                     reaction['MCRCMethod'] = 'MesmerILT'
                     pre_exponential = getNode(node, 'preExponential')
-                    reaction['preExponential'] = pre_exponential.text;
+                    reaction['preExponential'] = pre_exponential.text
+                    reaction['preExponential_unit'] = getAttr(pre_exponential, 'units')
 
                     activation_energy = getNode(node, 'activationEnergy')
                     reaction['activationEnergy'] = activation_energy.text
+                    reaction['activationEnergy_unit'] = getAttr(activation_energy, 'units')
 
                     n_infinity = getNode(node, 'nInfinity')
                     reaction['nInfinity'] = n_infinity.text
