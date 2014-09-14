@@ -149,6 +149,13 @@ class MesmerXML:
                         deltaEDown_node = getNode(node, 'deltaEDown')
                         if deltaEDown_node is not None:
                             molecule['deltaEDown'] = deltaEDown_node.text
+
+                    # read deltaEDownTExponent
+                    if molecule.get('deltaEDownTExponent') is None:
+                        deltaEDownTExponent_node = getNode(node, 'deltaEDownTExponent')
+                        if deltaEDownTExponent_node is not None:
+                            molecule['deltaEDownTExponent'] = deltaEDownTExponent_node.text
+                            molecule['referenceTemperature'] = getAttr(deltaEDownTExponent_node, 'referenceTemperature')
                 except:
                     pass
                 if molecule.get('vibFreqs'):

@@ -71,9 +71,12 @@
         {% if molecule.DOSCMethod %}
         <me:DOSCMethod name="{{ molecule.DOSCMethod }}"/>
         {% endif %}
-        {% if molecule.deltaEDown %}
+        {% if molecule.deltaEDown%}
         <me:energyTransferModel xsi:type="me:ExponentialDown">
             <me:deltaEDown units="cm-1">{{ molecule.deltaEDown }}</me:deltaEDown>
+            {% if molecule.deltaEDownTExponent %}
+            <me:deltaEDownTExponent referenceTemperature="{{ molecule.referenceTemperature }}">{{ molecule.deltaEDownTExponent }}</me:deltaEDownTExponent>
+            {% endif %}
         </me:energyTransferModel>
         {% endif %}
     </molecule>

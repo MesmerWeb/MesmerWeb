@@ -51,7 +51,8 @@ app.Molecule = Backbone.Model.extend({
         deltaEDown: '',
         DOSCMethod: 'ClassicalRotors',
         deltaEDownTExponent: '',
-        deltaEDown: ''
+        deltaEDown: '',
+        referenceTemperature: '298'
     },
 
     urlRoot: '/',
