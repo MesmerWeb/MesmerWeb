@@ -141,6 +141,12 @@ class MesmerXML:
                     # read DOSCMethod
                     dosc_method_node = getNode(node, 'DOSCMethod')
                     molecule['DOSCMethod'] = getAttr(dosc_method_node, 'name', from_text=True)
+
+                    # read deltaEDown
+                    if molecule.get('deltaEDown') is None:
+                        deltaEDown_node = getNode(node, 'deltaEDown')
+                        if deltaEDown_node is not None:
+                            molecule['deltaEDown'] = deltaEDown_node.text
                 except:
                     pass
                 if molecule.get('vibFreqs'):

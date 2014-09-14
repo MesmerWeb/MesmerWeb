@@ -50,7 +50,8 @@ app.Molecule = Backbone.Model.extend({
         sigma: '',
         deltaEDown: '',
         DOSCMethod: 'ClassicalRotors',
-        deltaEDownTExponent: ''
+        deltaEDownTExponent: '',
+        deltaEDown: ''
     },
 
     urlRoot: '/',
@@ -139,7 +140,11 @@ app.MoleculeList = Backbone.Collection.extend({
                 new_models.push(molecule);
             }
             this.reset(new_models);
-            this.selected = null;
+            //this.selected = null;
+            if (new_models.length > 0)
+                this.select(new_models[0]);
+            else
+                this.selected = null;
         }
     }
 });
@@ -205,13 +210,16 @@ app.ReactionList = Backbone.Collection.extend({
 
     fromJSON: function(list) {
         if (list) {
-            var new_models = [];
-            for (i = 0; i < list.length; i++) {
-                reaction = new app.Reaction(list[i]);
-                new_models.push(reaction);
+            var new_reactions = [];
+            for (var i = 0; i < list.length; i++) {
+                var reaction = new app.Reaction(list[i]);
+                new_reactions.push(reaction);
             }
-            this.reset(new_models);
-            this.selected = null;
+            this.reset(new_reactions);
+            if (new_reactions)
+                this.select(new_reactions[0]);
+            else
+                this.selected = null;
         }
     }
 });
